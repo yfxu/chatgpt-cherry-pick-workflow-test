@@ -1,0 +1,49 @@
+name: Cherry-pick merged PRs to specified branches
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [closed]
+
+jobs:
+  cherry-pick-to-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --global user.name "${GITHUB_ACTOR}"
+
+      - name: Get PR data
+        id: pr
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}
+
+      - name: Determine cherry-pick branches
+        id: cherry-pick-branches
+        run: |
+          BRANCHES=""
+          for tag in $(echo "${{ github.event.pull_request.head.ref }}" | grep -o 'chpick:[^ ,]\+' | cut -d: -f2-); do
+            BRANCHES="$BRANCHES $tag"
+          done
+          echo "name=$BRANCHES"
+
+      - name: Cherry-pick to branch
+        if: github.event.pull_request.merged == true
+        run: |
+          for BRANCH in ${{ steps.cherry-pick-branches.outputs.BRANCHES }}; do
+            git checkout -b "${{ github.event.pull_request.head.ref }}-to-$BRANCH" main
+            git cherry-pick -x ${{ github.event.pull_request.merge_commit_sha }}
+            git push origin "${{ github.event.pull_request.head.ref }}-to-$BRANCH" -f
+            hub pull-request --base $BRANCH --draft --no-edit --push --message "cherry-pick: ${{ github.event.pull_request.title }}"
+          done
