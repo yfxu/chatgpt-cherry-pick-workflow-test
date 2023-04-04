@@ -38,7 +38,7 @@ jobs:
           for tag in $(echo "${{ github.event.pull_request.head.ref }}" | grep -o 'chpick:[^ ,]\+' | cut -d: -f2-); do
             BRANCHES="$BRANCHES $tag"
           done
-          echo "name=$BRANCHES"
+          echo "BRANCHES=\"($BRANCHES)\"" >> $GITHUB_OUTPUT
 
       - name: Cherry-pick to branch
         run: |
