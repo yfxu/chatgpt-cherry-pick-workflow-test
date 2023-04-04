@@ -25,8 +25,9 @@ jobs:
       - name: Get PR data
         id: pr
         uses: octokit/request-action@v2.x
-        with:
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
           route: GET /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}
 
       - name: Determine cherry-pick branches
