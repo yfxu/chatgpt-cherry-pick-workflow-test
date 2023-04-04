@@ -16,7 +16,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Configure git
         run: |
@@ -27,6 +26,7 @@ jobs:
         id: pr
         uses: octokit/request-action@v2.x
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           route: GET /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}
 
       - name: Determine cherry-pick branches
