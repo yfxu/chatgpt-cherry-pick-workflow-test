@@ -46,5 +46,5 @@ jobs:
             git checkout -b "${{ github.event.pull_request.head.ref }}-to-$BRANCH" main
             git cherry-pick -x ${{ github.event.pull_request.merge_commit_sha }}
             git push origin "${{ github.event.pull_request.head.ref }}-to-$BRANCH" -f
-            hub pull-request --base $BRANCH --draft --no-edit --push --message "cherry-pick: ${{ github.event.pull_request.title }}"
+            hub pull-request --base $BRANCH --draft --no-edit --push --message "cherry-pick: ${{ github.event.pull_request.title }}" --assignee "${{ github.event.pull_request.user.login }}"
           done
