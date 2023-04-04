@@ -31,7 +31,7 @@ jobs:
 
       - name: Cherry-pick to branch
         run: |
-          for BRANCH in ${{ steps.cherry-pick-branches.outputs.BRANCHES }}; do
+          for BRANCH in ${{ steps.get-cherry-pick-branches.outputs.BRANCHES }}; do
             git checkout -b "${{ github.event.pull_request.head.ref }}-to-$BRANCH" main
             git cherry-pick -x ${{ github.event.pull_request.merge_commit_sha }}
             git push origin "${{ github.event.pull_request.head.ref }}-to-$BRANCH" -f
