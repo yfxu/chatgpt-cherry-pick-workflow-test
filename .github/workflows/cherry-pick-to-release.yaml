@@ -24,7 +24,7 @@ jobs:
         id: get-cherry-pick-branches
         run: |
           BRANCHES=""
-          for tag in ${{ github.event.pull_request.labels.[].name }} | grep -o 'chpick:[^ ,]\+' | cut -d: -f2-); do
+          for tag in ${{ github.event.pull_request.labels.*.name }} | grep -o 'chpick:[^ ,]\+' | cut -d: -f2-); do
             BRANCHES="$BRANCHES $tag"
           done
           echo "BRANCHES=\"($BRANCHES)\"" >> $GITHUB_OUTPUT
