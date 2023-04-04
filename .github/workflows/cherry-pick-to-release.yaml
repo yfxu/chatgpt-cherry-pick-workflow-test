@@ -9,6 +9,7 @@ on:
 
 jobs:
   cherry-pick-to-branch:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +41,6 @@ jobs:
           echo "name=$BRANCHES"
 
       - name: Cherry-pick to branch
-        if: github.event.pull_request.merged == true
         run: |
           for BRANCH in ${{ steps.cherry-pick-branches.outputs.BRANCHES }}; do
             git checkout -b "${{ github.event.pull_request.head.ref }}-to-$BRANCH" main
